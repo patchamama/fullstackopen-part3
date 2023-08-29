@@ -15,18 +15,18 @@ const url = `mongodb+srv://mandy_phonebook:${password}@cluster0.za4sftc.mongodb.
 
 mongoose.connect(url);
 
-const noteSchema = new mongoose.Schema({
+const phonebookSchema = new mongoose.Schema({
   name: String,
   number: String,
 });
 
-const Note = mongoose.model('Note', noteSchema);
+const Phonebook = mongoose.model('Phonebook', phonebookSchema);
 
 if (process.argv.length < 5) {
-  Note.find({}).then((result) => {
+  Phonebook.find({}).then((result) => {
     console.log('phonebook:');
-    result.forEach((note) => {
-      console.log(`${note.name} ${note.number}`);
+    result.forEach((phonebook) => {
+      console.log(`${phonebook.name} ${phonebook.number}`);
     });
     mongoose.connection.close();
   });
@@ -34,12 +34,12 @@ if (process.argv.length < 5) {
   const name = process.argv[3];
   const number = process.argv[4];
 
-  const note = new Note({
+  const phonebook = new Phonebook({
     name,
     number,
   });
 
-  note.save().then((result) => {
+  phonebook.save().then((result) => {
     console.log(`added ${name} number ${number} to phonebook`);
     mongoose.connection.close();
   });
