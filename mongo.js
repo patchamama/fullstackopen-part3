@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable comma-dangle */
 /* eslint-disable semi */
 const mongoose = require('mongoose');
@@ -39,7 +40,7 @@ if (process.argv.length < 5) {
     number,
   });
 
-  phonebook.save().then((result) => {
+  phonebook.save().then(() => {
     console.log(`added ${name} number ${number} to phonebook`);
     mongoose.connection.close();
   });

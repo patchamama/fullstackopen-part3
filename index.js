@@ -15,22 +15,22 @@ app.use(express.json());
 // Same origin policy
 app.use(cors());
 // To log messages to the console
-morgan.token('body', (req, res) => JSON.stringify(req.body));
+morgan.token('body', (req) => JSON.stringify(req.body));
 app.use(
   morgan(':method :url :status :res[content-length] - :response-time ms :body')
 );
 
-app.get('/', (request, response, next) => {
+app.get('/', (request, response) => {
   response.send('<h1>API to Phonebook</h1>');
 });
 
-app.get('/api/persons', (request, response, next) => {
+app.get('/api/persons', (request, response) => {
   Phonebook.find({}).then((phonebooks) => {
     response.json(phonebooks);
   });
 });
 
-app.get('/api/info', (request, response, next) => {
+app.get('/api/info', (request, response) => {
   Phonebook.find({}).then((phonebooks) => {
     response.send(
       'Phonebook has info for ' +
@@ -55,7 +55,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Phonebook.findByIdAndRemove(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     })
     .catch((error) => next(error));
@@ -118,6 +118,7 @@ const errorHandler = (error, request, response, next) => {
 };
 app.use(errorHandler);
 
+// eslint-disable-next-line no-undef
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
