@@ -68,15 +68,23 @@ const App = () => {
         .addNewPerson({ name: newName, number: newPhone })
         .then((returnedPhone) => {
           setPersons(persons.concat(returnedPhone));
+          setNotificationMsg({ type: 'ok', msg: `Add ${newName}!` });
+          setTimeout(() => {
+            setNotificationMsg({ type: null, msg: null });
+          }, 5000);
+          setNewName('');
+          setNewPhone('');
         })
-        .catch((error) => console.log(error));
-
-      setNotificationMsg({ type: 'ok', msg: `Add ${newName}!` });
-      setTimeout(() => {
-        setNotificationMsg({ type: null, msg: null });
-      }, 5000);
-      setNewName('');
-      setNewPhone('');
+        .catch((error) => {
+          setNotificationMsg({
+            type: 'error',
+            msg: error.response.data.error,
+          });
+          setTimeout(() => {
+            setNotificationMsg({ type: null, msg: null });
+          }, 5000);
+          console.log(error);
+        });
     }
   };
 

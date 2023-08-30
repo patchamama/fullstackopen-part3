@@ -20,17 +20,17 @@ app.use(
   morgan(':method :url :status :res[content-length] - :response-time ms :body')
 );
 
-app.get('/', (request, response) => {
+app.get('/', (request, response, next) => {
   response.send('<h1>API to Phonebook</h1>');
 });
 
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
   Phonebook.find({}).then((phonebooks) => {
     response.json(phonebooks);
   });
 });
 
-app.get('/api/info', (request, response) => {
+app.get('/api/info', (request, response, next) => {
   Phonebook.find({}).then((phonebooks) => {
     response.send(
       'Phonebook has info for ' +
@@ -41,7 +41,7 @@ app.get('/api/info', (request, response) => {
   });
 });
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   Phonebook.findById(request.params.id)
     .then((phonebook) => {
       if (phonebook) {
@@ -76,7 +76,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body;
 
   if (!body.name || !body.number) {
@@ -90,9 +90,13 @@ app.post('/api/persons', (request, response) => {
     number: body.number,
   });
 
-  phonebook.save().then((savedPhonebook) => {
-    response.json(savedPhonebook);
-  });
+  phonebook
+    .save()
+    .then((savedPhonebook) => savedPhonebook.toJSON())
+    .then((savedAndFormattedPhoneNote) => {
+      response.json(savedAndFormattedPhoneNote);
+    })
+    .catch((error) => next(error));
 });
 
 // Invalid routes
@@ -107,6 +111,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message });
   }
   next(error);
 };
