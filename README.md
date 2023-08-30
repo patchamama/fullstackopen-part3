@@ -2,6 +2,10 @@
 
 Answers to [openfullstack.com](https://fullstackopen.com) course exercises from the University of Helsinki
 
+_The application includes in the `frontend` folder a basic application programmed with React to access the REST API programmed with nodejs in the backend that accesses a mongoDB database. In the `build` folder is included the precompiled frontend for deploy along with the backend._
+
+_With these tasks, a complete CRUD has been implemented._
+
 ## Exercises
 
 ### a. Node.js and Express
@@ -25,3 +29,5 @@ Answers to [openfullstack.com](https://fullstackopen.com) course exercises from 
 - [Exercise 3.22.](https://fullstackopen.com/en/part3/validation_and_es_lint#exercise-3-22)
 
 The deploy was done in [render.com](https://render.com) and the live page is [here](https://fullstackopen-part3-ajna.onrender.com/)
+
+The JSON responses from the backend API (`api/persons`, `api/persons/<id>`) can be accessed [here](https://fullstackopen-part3-ajna.onrender.com/api/persons)
