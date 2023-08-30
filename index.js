@@ -20,29 +20,6 @@ app.use(
   morgan(':method :url :status :res[content-length] - :response-time ms :body')
 );
 
-let phonebooks = [
-  {
-    id: 1,
-    name: 'Arto Hellas',
-    number: '040-123456',
-  },
-  {
-    id: 2,
-    name: 'Ada Lovelace',
-    number: '39-44-5323523',
-  },
-  {
-    id: 3,
-    name: 'Dan Abramov',
-    number: '12-43-234345',
-  },
-  {
-    id: 4,
-    name: 'Mary Poppendieck',
-    number: '39-23-6423122',
-  },
-];
-
 app.get('/', (request, response) => {
   response.send('<h1>API to Phonebook</h1>');
 });
@@ -53,17 +30,15 @@ app.get('/api/persons', (request, response) => {
   });
 });
 
-// app.get('/api/persons', (request, response) => {
-//   response.json(phonebooks);
-// });
-
 app.get('/api/info', (request, response) => {
-  response.send(
-    'Phonebook has info for ' +
-      phonebooks.length +
-      ' people(s) <br> <br>' +
-      new Date()
-  );
+  Phonebook.find({}).then((phonebooks) => {
+    response.send(
+      'Phonebook has info for ' +
+        phonebooks.length +
+        ' people(s) <br> <br>' +
+        new Date()
+    );
+  });
 });
 
 app.get('/api/persons/:id', (request, response) => {
@@ -78,24 +53,6 @@ app.get('/api/persons/:id', (request, response) => {
     .catch((error) => next(error));
 });
 
-// app.get('/api/persons/:id', (request, response) => {
-//   const id = Number(request.params.id);
-//   const phonebook = phonebooks.find((phonebook) => phonebook.id === id);
-
-//   if (phonebook) {
-//     response.json(phonebook);
-//   } else {
-//     response.status(404).end();
-//   }
-// });
-
-// app.delete('/api/persons/:id', (request, response) => {
-//   const id = Number(request.params.id);
-//   phonebooks = phonebooks.filter((phonebook) => phonebook.id !== id);
-
-//   response.status(204).end();
-// });
-
 app.delete('/api/persons/:id', (request, response, next) => {
   Phonebook.findByIdAndRemove(request.params.id)
     .then((result) => {
@@ -105,11 +62,11 @@ app.delete('/api/persons/:id', (request, response, next) => {
 });
 
 app.put('/api/persons/:id', (request, response, next) => {
-  const body = request.body;
+  const { name, number } = request.body;
 
   const phonebook = {
-    name: body.name,
-    number: body.number,
+    name,
+    number,
   };
 
   Phonebook.findByIdAndUpdate(request.params.id, phonebook, { new: true })
@@ -118,11 +75,6 @@ app.put('/api/persons/:id', (request, response, next) => {
     })
     .catch((error) => next(error));
 });
-
-// const getRandomId = () => {
-//   const min = phonebooks.length;
-//   return Math.random() * (100000 - min) + min;
-// };
 
 app.post('/api/persons', (request, response) => {
   const body = request.body;
@@ -143,40 +95,12 @@ app.post('/api/persons', (request, response) => {
   });
 });
 
-// app.post('/api/persons', (request, response) => {
-//   const body = request.body;
-
-//   if (!body.name || !body.number) {
-//     return response.status(400).json({
-//       error: 'The name or number is missing',
-//     });
-//   }
-
-//   const nameExist = phonebooks.find(
-//     (phonebook) => phonebook.name === body.name
-//   );
-//   if (nameExist) {
-//     return response.status(400).json({
-//       error: 'name must be unique',
-//     });
-//   }
-
-//   const phonebook = {
-//     name: body.name,
-//     number: body.number,
-//     id: getRandomId(),
-//   };
-
-//   phonebooks = phonebooks.concat(phonebook);
-
-//   response.json(phonebook);
-// });
-
 // Invalid routes
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' });
 };
 app.use(unknownEndpoint);
+
 // Error handling in middleware
 const errorHandler = (error, request, response, next) => {
   console.error(error.message);
@@ -188,7 +112,7 @@ const errorHandler = (error, request, response, next) => {
 };
 app.use(errorHandler);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
